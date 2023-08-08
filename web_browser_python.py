@@ -1,10 +1,13 @@
 import sys
 import re
-from PyQt5.QtWidgets import QApplication, QSizePolicy, QWidget, QVBoxLayout, QHBoxLayout, QMainWindow, QLineEdit, \
-    QPushButton, QTabWidget, QToolButton, QTabBar
+from PyQt5.QtWidgets import (
+    QApplication, QSizePolicy, QWidget, QVBoxLayout, QHBoxLayout,
+    QMainWindow, QLineEdit, QPushButton, QTabWidget, QToolButton, QTabBar,
+)
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QFont
+
 
 class WebEngineWidget(QWidget):
     def __init__(self, parent=None):
@@ -14,6 +17,7 @@ class WebEngineWidget(QWidget):
         self.browser = QWebEngineView(self)
         layout.addWidget(self.browser)
         self.browser.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
 
 class WebBrowserApp(QMainWindow):
     def __init__(self):
@@ -29,14 +33,18 @@ class WebBrowserApp(QMainWindow):
 
     def create_widgets(self):
         self.url_entry = QLineEdit(self)
-        self.url_entry.returnPressed.connect(lambda: self.load_url(self.url_entry, self.tab_widget.currentWidget()))
+        self.url_entry.returnPressed.connect(
+            lambda: self.load_url(self.url_entry, self.tab_widget.currentWidget())
+        )
         self.url_entry.setPlaceholderText("Enter URL here")
         self.url_entry.setMaximumHeight(30)
         self.url_entry.setStyleSheet(
             "padding: 5px; background-color: #fff; border: 1px solid #ccc; font-size: 14px;"
         )
         go_button = QPushButton("Go")
-        go_button.clicked.connect(lambda: self.load_url(self.url_entry, self.tab_widget.currentWidget()))
+        go_button.clicked.connect(
+            lambda: self.load_url(self.url_entry, self.tab_widget.currentWidget())
+        )
         go_button.setStyleSheet(
             "background-color: #0078D4; color: #fff; padding: 8px 16px; font-size: 14px;"
         )
@@ -66,26 +74,34 @@ class WebBrowserApp(QMainWindow):
         close_button = QToolButton(self)
         close_button.setText("x")
         close_button.setStyleSheet(
-            "QToolButton { font-family: 'Material Icons'; font-size: 18px; background-color: #444; border: none; color: #fff; }"
+            "QToolButton { font-family: 'Material Icons'; font-size: 18px; background-color: #444; "
+            "border: none; color: #fff; }"
             "QToolButton::menu-indicator { image: none; }"
             "QToolButton:hover { background-color: #666; }"
         )
         close_button.clicked.connect(lambda: self.close_tab(new_tab_index))
-        self.tab_widget.tabBar().setTabButton(new_tab_index, QTabBar.RightSide, close_button)
+        self.tab_widget.tabBar().setTabButton(
+            new_tab_index, QTabBar.RightSide, close_button
+        )
 
     def load_url(self, url_entry, web_engine_widget):
         input_url = url_entry.text().strip()
         if not input_url:
             return
         url_regex = re.compile(
-            r"^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)+([\/?].*)?$"
+            r"^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?"
+            r"[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)+([\/?].*)?$"
         )
         if url_regex.match(input_url):
-            if not input_url.startswith("http://") and not input_url.startswith("https://"):
+            if not input_url.startswith("http://") and not input_url.startswith(
+                "https://"
+            ):
                 input_url = "http://" + input_url
             web_engine_widget.browser.setUrl(QUrl(input_url))
         else:
-            search_query = "https://www.google.com/search?q=" + "+".join(input_url.split())
+            search_query = "https://www.google.com/search?q=" + "+".join(
+                input_url.split()
+            )
             web_engine_widget.browser.setUrl(QUrl(search_query))
 
     def close_tab(self, index):
@@ -98,6 +114,7 @@ class WebBrowserApp(QMainWindow):
 
     def clear_search_bar(self, index):
         self.url_entry.clear()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
